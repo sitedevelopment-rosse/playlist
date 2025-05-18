@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8" />
+  <title>HOME - LA MIA PLAYLIST</title>
+  <style>
+    /* Sfondo con overlay scuro */
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      color: white;
+      text-align: center;
+      padding: 40px;
+      height: 100vh;
+      position: relative;
+      overflow: hidden;
+    }
+    body::before {
+      content: "";
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: url('sfondo.jpg') no-repeat center center/cover;
+      filter: brightness(0.3);
+      z-index: -1;
+    }
+    .button {
+      background-color: white;
+      color: black;
+      padding: 20px 40px;
+      text-decoration: none;
+      font-size: 22px;
+      border-radius: 8px;
+      font-weight: bold;
+      display: inline-block;
+      margin-top: 40px;
+    }
+    .button:hover {
+      background-color: blue;
+      color: white;
+    }
+  </style>
+</head>
+<body>
+  <h1>HOME - LA MIA PLAYLIST</h1>
+  <div>
+    <a class="button" href="playlist.html">ᴠᴀɪ ᴀʟʟᴀ ᴍɪᴀ ᴘʟᴀʏʟɪꜱᴛ!</a>
+  </div>
+</body>
+</html>

@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8" />
+  <title>LA MIA PLAYLIST</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      color: white;
+      margin: 0;
+      padding: 40px;
+      min-height: 100vh;
+      position: relative;
+      background: none;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+    }
+    body::before {
+      content: "";
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: url('sfondo.jpg') no-repeat center center/cover;
+      filter: brightness(0.3);
+      z-index: -1;
+    }
+    h1 {
+      margin-bottom: 10px;
+    }
+    ul {
+      list-style: none;
+      padding: 0;
+      max-width: 400px;
+      margin: 20px auto 40px;
+      width: 100%;
+    }
+    li {
+      background: rgba(255,255,255,0.1);
+      padding: 15px 20px;
+      margin-bottom: 15px;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background 0.3s;
+      text-align: left;
+      position: relative;
+    }
+    li:hover {
+      background: rgba(255,255,255,0.3);
+    }
+    li.active {
+      background: rgba(0, 120, 215, 0.8);
+      font-weight: bold;
+    }
+    .video-button {
+      margin-top: 8px;
+      display: inline-block;
+      padding: 6px 14px;
+      background: white;
+      color: black;
+      border-radius: 6px;
+      font-weight: bold;
+      cursor: pointer;
+      font-size: 14px;
+      text-decoration: none;
+      user-select: none;
+    }
+    .video-button:hover {
+      background: blue;
+      color: white;
+    }
+    #current-song {
+      font-size: 22px;
+      font-weight: bold;
+      margin-bottom: 15px;
+      min-height: 30px;
+    }
+    audio {
+      width: 100%;
+      max-width: 400px;
+      outline: none;
+      border-radius: 8px;
+    }
+    .controls {
+      margin-top: 10px;
+    }
+    .controls button {
+      font-size: 18px;
+      padding: 8px 15px;
+      margin: 0 10px;
+      cursor: pointer;
+      border: none;
+      border-radius: 5px;
+      background-color: white;
+      color: black;
+      font-weight: bold;
+      transition: background-color 0.3s;
+    }
+    .controls button:hover {
+      background-color: blue;
+      color: white;
+    }
+    /* Pulsante torna alla home */
+    .home-button {
+      margin-top: 30px;
+      background-color: white;
+      color: black;
+      padding: 15px 30px;
+      text-decoration: none;
+      font-size: 20px;
+      font-weight: bold;
+      border-radius: 8px;
+      display: inline-block;
+      transition: background-color 0.3s;
+    }
+    .home-button:hover {
+      background-color: blue;
+      color: white;
+    }
+    footer {
+      margin-top: auto;
+      padding: 20px;
+      font-size: 14px;
+      color: #ccc;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>BENTORNATO... GODITI LA TUA MUSICA!</h1>
+
+  <ul id="playlist"></ul>
+
+  <div id="current-song">Scegli la canzone per riprodurla.</div>
+
+  <audio id="audio-player" controls autoplay></audio>
+
+  <div class="controls">
+    <button id="prev-btn">⏮️</button>
+    <button id="play-pause-btn">⏸️</button>
+    <button id="next-btn">⏭️</button>
+  </div>
+
+  <a href="index.html" class="home-button">ᴛᴏʀɴᴀ ᴀʟʟᴀ ʜᴏᴍᴇ!</a>
+
+  <footer>
+    Realizzato e gestito da: Riccardo Rossetti - ogni diritto è riservato.
+  </footer>
+
+  <script>
+    const songs = [
+      {
+        title: "Fre_nky - MOCRO SCHOOL feat. Yunes LaGrintaa, Hani, Kassimi",
+        audioFile: "songs/mocroschool.mp3",
+        videoUrl: "https://www.youtube.com/watch?v=DwirYs1GknQ"
+      },
+      {
+        title: "3robi - NOORD AFRICANO ft. Simba La Rue",
+        audioFile: "songs/noordafricano.mp3",
+        videoUrl: "https://www.youtube.com/watch?v=ftfiTdExQtk"
+      },
+      {
+        title: "Escomar, FT Kings - MADAMA feat. Simba La Rue",
+        audioFile: "songs/madama.mp3",
+        videoUrl: "https://www.youtube.com/watch?v=iHIm-UL4Ucc"
+      },
+      {
+        title: "Simba La Rue - CA**I MIEI",
+        audioFile: "songs/cazzimiei.mp3",
+        videoUrl: "https://www.youtube.com/watch?v=4FkXUNkwj44"
+      },
+      {
+        title: "Paky - GANGSTA SHIT feat. Simba La Rue",
+        audioFile: "songs/gangstashit.mp3",
+        videoUrl: "https://www.youtube.com/watch?v=zCmr66YxFn0"
+      },
+      {
+        title: "Artie 5ive - DODGE DURANGO",
+        audioFile: "songs/dodgedurango.mp3",
+        videoUrl: "https://youtu.be/bPEDwKo_ImE?si=RNIOYSWpaB92S2ko"
+      }
+    ];
+
+    const playlistEl = document.getElementById('playlist');
+    const audioPlayer = document.getElementById('audio-player');
+    const currentSongEl = document.getElementById('current-song');
+    const playPauseBtn = document.getElementById('play-pause-btn');
+    const prevBtn = document.getElementById('prev-btn');
+    const nextBtn = document.getElementById('next-btn');
+
+    let currentIndex = 0;
+    let isPlaying = false;
+
+    function renderPlaylist() {
+      playlistEl.innerHTML = "";
+      songs.forEach((song, index) => {
+        const li = document.createElement('li');
+        li.textContent = song.title;
+        li.classList.add('song-item');
+
+        // Cliccando il titolo parte la canzone
+        li.addEventListener('click', () => {
+          playSong(index);
+        });
+
+        // Bottone "Guarda il video"
+        const videoBtn = document.createElement('a');
+        videoBtn.textContent = "CLICCA QUI PER VEDERE IL VIDEO-CLIP UFFICIALE!";
+        videoBtn.href = song.videoUrl;
+        videoBtn.target = "_blank";
+        videoBtn.classList.add('video-button');
+        videoBtn.addEventListener('click', (e) => {
+          e.stopPropagation(); // per non far partire la canzone se clicco sul bottone video
+        });
+
+        li.appendChild(document.createElement('br'));
+        li.appendChild(videoBtn);
+        playlistEl.appendChild(li);
+      });
+    }
+
+    function playSong(index) {
+      if(index < 0 || index >= songs.length) return;
+      currentIndex = index;
+      audioPlayer.src = songs[index].audioFile;
+      currentSongEl.textContent = "🎵 Sto riproducendo: " + songs[index].title;
+      audioPlayer.play();
+      isPlaying = true;
+      updateActiveSong();
+      playPauseBtn.textContent = "⏸️";
+    }
+
+    function updateActiveSong() {
+      const items = playlistEl.querySelectorAll('li');
+      items.forEach(item => item.classList.remove('active'));
+      if (items[currentIndex]) {
+        items[currentIndex].classList.add('active');
+      }
+    }
+
+    playPauseBtn.addEventListener('click', () => {
+      if(isPlaying) {
+        audioPlayer.pause();
+        playPauseBtn.textContent = "▶️";
+      } else {
+        audioPlayer.play();
+        playPauseBtn.textContent = "⏸️";
+      }
+      isPlaying = !isPlaying;
+    });
+
+    prevBtn.addEventListener('click', () => {
+      let newIndex = currentIndex - 1;
+      if(newIndex < 0) newIndex = songs.length -1;
+      playSong(newIndex);
+    });
+
+    nextBtn.addEventListener('click', () => {
+      let newIndex = currentIndex + 1;
+      if(newIndex >= songs.length) newIndex = 0;
+      playSong(newIndex);
+    });
+
+    audioPlayer.addEventListener('ended', () => {
+      // Al termine passa alla canzone successiva automaticamente
+      let newIndex = currentIndex + 1;
+      if(newIndex >= songs.length) newIndex = 0;
+      playSong(newIndex);
+    });
+
+    // All'avvio:
+    renderPlaylist();
+  </script>
+
+</body>
+</html>
